@@ -53,7 +53,7 @@
     - Restart glance services
     - Restart uwsgi services
 
-- name: Implement policy.yaml if there are overrides configured
+- name: Place policy.yaml file
   openstack.config_template.config_template:
     dest: "{{ glance_etc_dir }}/{{ glance_policy_file }}"
     config_overrides: "{{ glance_policy_overrides }}"
@@ -62,18 +62,6 @@
     group: "{{ glance_system_group_name }}"
     mode: "0640"
     content: "{{ glance_policy_content }}"
-  when:
-    - (glance_policy_overrides | length > 0) or (glance_policy_content | length > 0)
-  tags:
-    - glance-policy-override
-
-- name: Remove legacy policy.yaml file
-  ansible.builtin.file:
-    path: "{{ glance_etc_dir }}/{{ glance_policy_file }}"
-    state: absent
-  when:
-    - glance_policy_overrides | length == 0
-    - glance_policy_content | length == 0
   tags:
     - glance-policy-override
 
